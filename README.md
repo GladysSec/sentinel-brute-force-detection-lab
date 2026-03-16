@@ -1,111 +1,62 @@
 # sentinel-brute-force-detection-lab
 Microsoft Sentinel detection engineering lab – brute force detection using KQL.
 This lab demonstrates how to design and validate a brute-force detection rule using Microsoft Sentinel and Azure AD sign-in logs.
-Azure AD → Log Analytics Workspace → Microsoft Sentinel → Scheduled Analytics Rule → Alert → Incident
+Validation and Testing
 
-## Environment Setup
+Brute-Force Simulation
 
-### 1. Log Analytics Workspace Creation
+To validate the detection rule, a brute-force login scenario was simulated against a test user account.
 
-- Navigated to Azure Portal
-- Searched for **Log Analytics Workspaces**
-- Clicked **Create**
-- Selected subscription
-- Created resource group
-- Selected region (West Europe)
-- Named workspace: <sentinel-weu-lab-01>
+Actions performed:
+	•	Opened a private browser session
+	•	Attempted multiple failed login attempts against the test account
+	•	Ensured all attempts occurred within a five-minute window
 
-Purpose:
-The workspace stores and indexes log data used by Microsoft Sentinel.
+Purpose
 
----
+The objective was to generate authentication failure events in Microsoft Entra ID logs that could be evaluated by the detection rule in Microsoft Sentinel.
 
-### 2. Microsoft Sentinel Enablement
+Analytics Rule Execution
 
-- Opened Microsoft Sentinel from Azure Portal
-- Selected the created Log Analytics Workspace
-- Clicked **Add Microsoft Sentinel**
+The analytics rule was configured to run every five minutes.
 
-Purpose:
-Sentinel was enabled to provide SIEM capabilities on top of the workspace.
+After generating the failed login attempts, the system was allowed to complete the next scheduled rule evaluation cycle so that the newly generated authentication events could be processed.
 
----
 
-### 3. Azure AD Sign-In Logs Connector
+Alert Verification
 
-- Opened Microsoft Sentinel
-- Navigated to **Data Connectors**
-- Selected **Microsoft Entra ID**
-- Enabled **Sign-in logs**
-- Clicked **Apply Changes**
+Once the rule executed, the following observations were confirmed:
+	•	An alert was successfully generated
+	•	The alert contained the affected user account
+	•	The alert captured the originating source IP address
 
-Purpose:
-This allows Azure AD authentication logs to flow into the workspace for detection use cases.
+This confirmed that the detection logic correctly identified abnormal authentication behavior.
 
-## Detection Logic
 
-The detection query used in this lab is available in:
+Incident Creation
 
-`/queries/brute-force.kql`
+Incident creation was enabled within the analytics rule configuration.
 
-### Logic Breakdown
+Following alert generation:
+	•	The alert was automatically grouped into an incident
+	•	The incident contained the associated alert and relevant entities
 
-**ResultType != 0**
+This validated the incident automation workflow within Microsoft Sentinel.
 
-In Azure AD sign-in logs, ResultType = 0 indicates a successful login.
-Filtering with ResultType != 0 isolates failed authentication attempts.
 
-**bin(TimeGenerated, 5m)**
+Entity Mapping Review
 
-The bin() function groups events into 5-minute time windows.
-This allows detection of multiple failed attempts occurring within a short time frame.
+The generated incident was opened for further analysis.
 
-**FailedAttempts >= 5**
+The following entities were reviewed:
+	•	User account
+	•	Source IP address
+	•	Related authentication log entries
 
-The threshold triggers the rule when 5 or more failed logins occur for the same user and IP within 5 minutes.
-This behavior is consistent with brute-force attack patterns.
+Entity mapping provided additional investigation context and enabled a clearer understanding of the authentication activity.
 
-## Validation and Testing
 
-### Step 1 – Simulated Brute-Force Behavior
+Result
 
-To simulate a brute-force attack scenario:
+The detection rule successfully identified simulated brute-force authentication activity and generated the expected alert and incident within Microsoft Sentinel.
 
-- Opened a private browser session
-- Attempted multiple failed logins against a test user account
-- Ensured attempts occurred within a 5-minute window
-
-Purpose:
-To generate failed authentication logs in Azure AD.
-### Step 2 – Waited for Scheduled Rule Execution
-
-The analytics rule was configured to run every 5 minutes.
-After generating failed login attempts, I waited for the rule evaluation cycle to complete.
-### Step 3 – Verified Alert Generation
-
-After the rule executed:
-
-- Confirmed that an alert was generated
-- Verified that the alert contained the affected user and IP address
-- ### Step 4 – Verified Incident Creation
-
-Incident creation was enabled in the rule configuration.
-Confirmed that the alert was automatically grouped into an incident.
-### Step 5 – Investigated Entity Mapping
-
-Opened the generated incident and reviewed:
-
-- Mapped account entity
-- Source IP address
-- Related log entries
-
-Entity mapping enabled enriched investigation context inside Sentinel.
-
-![Incident](screenshots/incident-generated.jpg)
-
-## Lessons Learned
-
-- Detection rules require proper log ingestion before deployment.
-- Evaluation frequency affects incident timing.
-- Lower thresholds increase alert noise.
-- Entity mapping improves investigation context.
