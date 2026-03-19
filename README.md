@@ -1,4 +1,4 @@
-# sentinel-brute-force-detection-lab
+# sentinel-brute-force-detection
 Microsoft Sentinel detection engineering lab – brute force detection using KQL.
 This lab demonstrates how to design and validate a brute-force detection rule using Microsoft Sentinel and Azure AD sign-in logs.
 Validation and Testing
