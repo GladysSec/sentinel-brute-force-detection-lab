@@ -50,7 +50,7 @@ where FailedAttempts >= 5	Threshold filter—alerts on 5+ failures in 5 minutes
 
 5. Screenshot Reference: KQL Query
 
-![Kql Query](screenshots/kql-query.png)
+![Kql Query](screenshots/kql-query.png.jpg)
 This screenshot shows the KQL query executed in the Log Analytics workspace, demonstrating the query logic and preview of results.
 The query was tested in the Microsoft Sentinel Logs blade to validate syntax and expected output before implementing as a scheduled analytics rule.
 
