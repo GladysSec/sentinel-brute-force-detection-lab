@@ -107,12 +107,6 @@ Threshold Tuning is Essential: The threshold of >= 5 failures in 5 minutes worke
 - MITRE ATT&CK mapping and threat modeling
 - Incident response decision-making and workflow validation
 - Security pipeline validation (analytics rule → alert → incident)
-
- ## Full Technical Report
-
-For the complete deep-dive documentation including query variants, metrics, and deployment recommendations, see:
-http://report/incident-report.md
-
   
 
   
